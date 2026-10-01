@@ -1,0 +1,16 @@
+# Template. To enable: copy to .github/workflows/reacher-rotate.yml ON THE DEFAULT BRANCH
+# (scheduled workflows only run there), add repo secret HEROKU_API_KEY and repo variable REACHER_APPS
+# ("pnda-reacher-1 pnda-reacher-2"), and enable Actions on the fork.
+name: reacher-rotate
+on:
+  schedule: [{ cron: "17 */6 * * *" }]   # every 6 h, apps rotated one after the other
+  workflow_dispatch: {}
+jobs:
+  rotate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: heroku-pool }
+      - run: printf 'APPS="%s"\n' "${{ vars.REACHER_APPS }}" > pool.env && deploy/heroku/rotate.sh pool.env
+        env: { HEROKU_API_KEY: "${{ secrets.HEROKU_API_KEY }}" }

@@ -1,0 +1,6 @@
+# Heroku container build (stack "container"). Deployed with:
+#   git push https://git.heroku.com/<app>.git heroku-pool:main
+# See deploy/heroku/README.md.
+build:
+  docker:
+    web: deploy/heroku/Dockerfile
