@@ -18,3 +18,11 @@ the official `reacherhq/backend:v0.11.7` with a small entrypoint (`start.sh`) th
 | `rotate.github-workflow.yml` | cron template (every 6 h) |
 
 Full runbook (costs, risks, cut-over order): `~/Documents/apify-actors/REACHER-INFRA.md` on the owner's Mac.
+
+## Deployment of 2026-10-05 (team pnda)
+
+`pnda-reacher-1` and `pnda-reacher-2` (team `pnda`, eu, Basic) were created with `create-apps.sh`
+(Heroku-side build, no local Docker). The header secret is refused/accepted as expected and a plain
+restart changes the egress IP (`rotate.sh` verified). **Outbound port 25 is blocked** on these dynos
+(`port25=blocked`; port 587 answers), so `check_email` hits the router's 30 s timeout (H12) until
+Heroku unblocks port 25 or the pool moves to hosts with port 25 open.
