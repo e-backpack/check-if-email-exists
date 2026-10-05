@@ -21,8 +21,11 @@ Full runbook (costs, risks, cut-over order): `~/Documents/apify-actors/REACHER-I
 
 ## Deployment of 2026-10-05 (team pnda)
 
-`pnda-reacher-1` and `pnda-reacher-2` (team `pnda`, eu, Basic) were created with `create-apps.sh`
-(Heroku-side build, no local Docker). The header secret is refused/accepted as expected and a plain
-restart changes the egress IP (`rotate.sh` verified). **Outbound port 25 is blocked** on these dynos
-(`port25=blocked`; port 587 answers), so `check_email` hits the router's 30 s timeout (H12) until
-Heroku unblocks port 25 or the pool moves to hosts with port 25 open.
+**The pool must run in the `us` region.** Outbound port 25 is blocked in `eu` and open in `us`
+(one-off dynos: `gmail-smtp-in.l.google.com:25` answers 220 from us, times out from eu). Region is fixed
+at app creation; `create-apps.sh` defaults to `REGION=us`.
+
+Active: `pnda-reacher-us-1` and `pnda-reacher-us-2` (team `pnda`, us, Basic): `validate.sh` passes
+(400 without secret, safe / catch-all / invalid), `port25=open` at boot, `rotate.sh` changes the IP
+and checks still pass afterwards. The first pool `pnda-reacher-1` / `pnda-reacher-2` (eu) is scaled
+to `web=0`, not deleted (client's call).
