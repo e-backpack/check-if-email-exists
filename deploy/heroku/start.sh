@@ -16,7 +16,8 @@ export RCH__BACKEND_NAME="${RCH__BACKEND_NAME:-${HEROKU_APP_NAME:-reacher}}"
 
 (
   ip=$(wget -qO- -T 8 https://api.ipify.org 2>/dev/null || echo unknown)
-  if timeout 8 nc -w 6 gmail-smtp-in.l.google.com 25 </dev/null 2>/dev/null | head -c 3 | grep -q 220; then p25=open; else p25=blocked; fi
+  # stdin must stay open while the banner arrives: busybox nc exits on stdin EOF (</dev/null gave a false "blocked")
+  if sleep 6 | timeout 10 nc gmail-smtp-in.l.google.com 25 2>/dev/null | head -c 3 | grep -q 220; then p25=open; else p25=blocked; fi
   echo "reacher-boot app=${RCH__BACKEND_NAME} egress_ip=${ip} port25=${p25} hello=${RCH__HELLO_NAME:-unset} dyno=${DYNO:-local}"
 ) &
 
