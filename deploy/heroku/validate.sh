@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Validates one or more Reacher URLs: version, refusal without secret, safe / catch-all / invalid
 # answers, and SMTP identity. Usage: deploy/heroku/validate.sh https://a.herokuapp.com [https://b...]
-# Reads the secret from $SECRET_FILE (default ~/.config/reacher/secret), never prints it.
+# Reads the secret from $SECRET_FILE (default ~/.config/reacher/header_secret), never prints it.
 set -uo pipefail
-SECRET_FILE="${SECRET_FILE:-$HOME/.config/reacher/secret}"; S="$(cat "$SECRET_FILE")"
+SECRET_FILE="${SECRET_FILE:-$HOME/.config/reacher/header_secret}"; S="$(cat "$SECRET_FILE")"
 fail=0
 check() { # url email expected-python-expr label
   curl -s -m 90 -X POST "$1/v0/check_email" -H 'content-type: application/json' -H "x-reacher-secret: $S" \

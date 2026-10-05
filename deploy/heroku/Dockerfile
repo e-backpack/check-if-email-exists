@@ -3,7 +3,9 @@
 FROM reacherhq/backend:v0.11.7
 
 USER root
-COPY deploy/heroku/start.sh /home/reacher/start.sh
+# Heroku (heroku.yml) uses the Dockerfile's directory as build context, hence the bare path.
+# Local build: docker build -f deploy/heroku/Dockerfile deploy/heroku
+COPY start.sh /home/reacher/start.sh
 RUN chmod 755 /home/reacher/start.sh && chown chrome:chrome /home/reacher/start.sh
 USER chrome
 
