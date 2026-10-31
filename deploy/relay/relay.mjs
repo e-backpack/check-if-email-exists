@@ -1,6 +1,6 @@
 // Reacher relay: same API and secret as a Reacher instance, forwards to the backends of RELAY_BACKENDS.
 // - round-robin, next backend on network error / timeout / 429 / 5xx;
-// - an answer refused for an IP blocklist (smtp.error.description "IpBlacklisted") is retried on the next
+// - an answer refused for an IP blocklist (smtp.description "IpBlacklisted") is retried on the next
 //   backend, and that backend is restarted through the Heroku API (new dyno = new outbound IP), at most
 //   once per RELAY_RESTART_COOLDOWN_MIN per backend; it goes last in the order meanwhile;
 // - after RELAY_MAX_RESTARTS restarts still listed, it is only logged ("relay-backend-hopeless") so the
@@ -47,7 +47,7 @@ async function restart(b) {
 }
 
 function ipBlacklisted(body) {
-  try { return JSON.parse(body)?.smtp?.error?.description === 'IpBlacklisted' } catch { return false }
+  try { const s = JSON.parse(body)?.smtp; return s?.description === 'IpBlacklisted' || s?.error?.description === 'IpBlacklisted' } catch { return false }
 }
 
 async function forward(method, path, headers, body) {
