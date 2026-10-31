@@ -1,0 +1,5 @@
+# Relay app (stable URL in front of the Reacher pool). Deployed alone with:
+#   git push https://git.heroku.com/<relay-app>.git "$(git subtree split --prefix deploy/relay heroku-pool)":refs/heads/main --force
+build:
+  docker:
+    web: Dockerfile
